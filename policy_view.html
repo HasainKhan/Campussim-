@@ -1,0 +1,28 @@
+{% extends "base.html" %}{% block title %}{{ p.title }}{% endblock %}{% block body %}
+{% set staff = user.role in ('admin','registrar') %}
+<h1>{{ p.title }} <span class="tag {{ p.status }}">{{ p.status }}</span></h1><div class="doc">{{ p.body }}</div>
+{% if staff %}
+<form method="post" action="{{ url_for('simulate', pid=p.id) }}" class="row"><input type="hidden" name="csrf" value="{{ csrf }}">
+<label>Agents<select name="n"><option>20</option><option selected>40</option><option>100</option></select></label><button>Run simulation</button></form>
+<form method="post" action="{{ url_for('publish', pid=p.id) }}" class="row"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="ghost">{{ 'Unpublish' if p.status=='published' else 'Publish to community' }}</button></form>
+{% if sim %}<h2>Simulation result <span class="tag">{{ sim.mode }} mode</span></h2>
+{% if sim.mode == 'rules' %}<p class="muted">Ran on the built-in rule engine. Set ANTHROPIC_API_KEY to let LLM agents reason as each persona.</p>{% endif %}
+<div class="stats"><div><b>{{ sim.risk }}/100</b>Rollout risk</div><div><b>{{ sim.opposed }}%</b>Likely to object</div><div><b>{{ sim.mean }}</b>Mean stance (-2 to 2)</div><div><b>{{ sim.n }}</b>Agents</div></div>
+{% if sim.mean1 is defined %}<p class="muted">Discussion round: after hearing peers, mean stance moved from {{ sim.mean1 }} to {{ sim.mean }} and objectors from {{ sim.opposed1 }}% to {{ sim.opposed }}%.</p>{% endif %}
+{% for c in sim.conflicts %}<div class="flash">Possible conflict: {{ c.title }} mentions {{ c.existing|join(', ') }}%, this draft says {{ c.draft|join(', ') }}%.</div>{% endfor %}
+<h3>Where it lands hardest</h3>
+{% for key, grp in sim.segments.items() %}<div class="seg"><h4>By {{ key }}</h4>{% for k, v in grp.items() %}
+<div class="bar"><span>{{ k }} ({{ v.n }})</span><i style="--w:{{ ((v.mean + 2) / 4 * 100)|round|int }}%" class="{{ 'neg' if v.mean < -0.5 else 'ok' }}"></i><em>{{ v.opposed }}% object</em></div>{% endfor %}</div>{% endfor %}
+<h3>Main objections</h3><ul>{% for o, c in sim.objections %}<li>{{ o }} <span class="muted">({{ c }} agents)</span></li>{% else %}<li>No strong objections found.</li>{% endfor %}</ul>
+<h3>Sample voices</h3>{% for v in sim.voices %}<blockquote><b>{{ v.who }}</b> ({{ v.stance }}): {{ v.reason }}</blockquote>{% endfor %}
+<h3>Rulebook clauses the agents were given</h3>
+{% for c in sim.clauses %}<blockquote><b>{{ c.title }}</b> <span class="muted">(match {{ c.score }})</span><br>{{ c.text }}</blockquote>{% else %}<p class="muted">No rulebook indexed yet. Add one under Rulebook index.</p>{% endfor %}
+<h3>Suggested revision</h3><div class="doc">{{ sim.revised }}</div>
+<form method="post" action="{{ url_for('adopt', pid=p.id) }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="ghost">Use revised text as new draft</button></form>
+{% endif %}
+<h2>Community feedback ({{ fb|length }})</h2>{% for f in fb %}<blockquote><b>{{ f.name }}</b> <span class="tag">{{ f.stance }}</span> {{ f.comment }}</blockquote>{% else %}<p class="muted">No feedback yet.</p>{% endfor %}
+{% else %}
+<h2>Your feedback</h2><form method="post" action="{{ url_for('feedback', pid=p.id) }}" class="stack"><input type="hidden" name="csrf" value="{{ csrf }}">
+<label>Your position<select name="stance">{% for s in ('support','neutral','oppose') %}<option {{ 'selected' if mine and mine.stance==s }}>{{ s }}</option>{% endfor %}</select></label>
+<label>Comment<textarea name="comment" rows="3" maxlength="500">{{ mine.comment if mine }}</textarea></label><button>Save feedback</button></form>
+{% endif %}{% endblock %}

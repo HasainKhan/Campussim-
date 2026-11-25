@@ -1,0 +1,5 @@
+{% extends "base.html" %}{% block title %}Draft a policy{% endblock %}{% block body %}
+<h1>Draft a policy</h1><form method="post" class="stack"><input type="hidden" name="csrf" value="{{ csrf }}">
+<label>Title<input name="title" required></label>
+<label>Policy text<textarea name="body" rows="10" required placeholder="Example: Students need 85% attendance to sit semester exams. Classes begin at 8 AM. A fine applies to late fee payment."></textarea></label>
+<button>Save draft</button></form>{% endblock %}

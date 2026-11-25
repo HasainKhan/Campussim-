@@ -1,0 +1,7 @@
+{% extends "base.html" %}{% block title %}Rulebook index{% endblock %}{% block body %}
+<h1>Rulebook index</h1><p class="muted">Documents added here are split into clauses and retrieved (BM25) for every simulation, so agents react to your real rules.</p>
+<table class="grid"><tr><th>Document</th><th>Clauses</th><th>Added</th><th></th></tr>
+{% for r in rows %}<tr><td>{{ r.title }}</td><td>{{ r.n }}</td><td>{{ r.created[:10] }}</td><td><form method="post" action="{{ url_for('knowledge_delete', did=r.id) }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="ghost">Remove</button></form></td></tr>{% endfor %}</table>
+<h2>Add a document</h2><form method="post" enctype="multipart/form-data" class="stack"><input type="hidden" name="csrf" value="{{ csrf }}">
+<label>Title<input name="title"></label><label>Upload (.txt, .md or text-based .pdf)<input type="file" name="file" accept=".txt,.md,.pdf"></label>
+<label>Or paste text<textarea name="text" rows="6"></textarea></label><button>Add to index</button></form>{% endblock %}

@@ -1,0 +1,12 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{% block title %}Portal{% endblock %} | CampusSim</title><link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></head><body>
+{% if user %}<header class="top"><div class="brand"><b>CampusSim</b><span>University Policy Portal</span></div>
+<div class="who">{{ user.name }} <em>{{ user.role }}</em> <a href="{{ url_for('logout') }}">Sign out</a></div></header>
+<div class="shell"><nav class="side">
+<a href="{{ url_for('dashboard') }}">Dashboard</a>
+<a href="{{ url_for('policies') }}">{{ 'All policies' if user.role in ('admin','registrar') else 'Notices and policies' }}</a>
+{% if user.role in ('admin','registrar') %}<a href="{{ url_for('policy_new') }}">Draft a policy</a><a href="{{ url_for('knowledge') }}">Rulebook index</a><a href="{{ url_for('validation') }}">Validation</a>{% endif %}
+{% if user.role == 'admin' %}<a href="{{ url_for('users') }}">Users and roles</a>{% endif %}</nav><main>
+{% else %}<main class="bare">{% endif %}
+{% for m in get_flashed_messages() %}<div class="flash">{{ m }}</div>{% endfor %}
+{% block body %}{% endblock %}</main>{% if user %}</div>{% endif %}</body></html>

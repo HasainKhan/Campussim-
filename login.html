@@ -1,0 +1,8 @@
+{% extends "base.html" %}{% block title %}Sign in{% endblock %}{% block body %}
+<section class="login"><div class="crest">CS</div><h1>Sign in to the policy portal</h1>
+<form method="post"><input type="hidden" name="csrf" value="{{ csrf }}">
+<label>Username<input name="username" autocomplete="username" required autofocus></label>
+<label>Password<input name="password" type="password" autocomplete="current-password" required></label>
+<button>Sign in</button></form>
+<details><summary>Demo accounts</summary><table>{% for u,n,r,p in demo %}<tr><td>{{ r }}</td><td>{{ u }}</td><td>{{ p }}</td></tr>{% endfor %}</table>
+<p class="muted">Change these passwords before any real deployment.</p></details></section>{% endblock %}

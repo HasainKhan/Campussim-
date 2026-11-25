@@ -1,0 +1,2 @@
+{% extends "base.html" %}{% block title %}Policies{% endblock %}{% block body %}
+<h1>{{ 'All policies' if user.role in ('admin','registrar') else 'Notices and policies' }}</h1>{% include "_table.html" %}{% endblock %}

@@ -1,0 +1,6 @@
+{% extends "base.html" %}{% block title %}Validation{% endblock %}{% block body %}
+<h1>Validation</h1><p class="muted">Compare what CampusSim predicted with what really happened. Enter the real share of people who objected (from a survey or the registrar's records).</p>
+{% if mae is not none %}<div class="stats"><div><b>{{ mae }}</b>Mean absolute error (points)</div><div><b>{{ n }}</b>Policies compared</div></div>{% endif %}
+<table class="grid"><tr><th>Policy</th><th>Predicted objectors</th><th>Portal feedback</th><th>Actual objectors</th><th></th></tr>
+{% for r in rows %}<tr><td>{{ r.title }}</td><td>{{ r.pred ~ '%' if r.pred is not none else 'not run' }}</td><td>{{ (r.portal|int ~ '% of ' ~ r.fb) if r.fb else 'none' }}</td><td>{{ r.actual ~ '%' if r.actual is not none else 'not entered' }}</td>
+<td><form method="post" action="{{ url_for('validation_set', pid=r.id) }}" class="row"><input type="hidden" name="csrf" value="{{ csrf }}"><input name="actual" type="number" min="0" max="100" style="width:90px" required><button class="ghost">Save</button></form></td></tr>{% endfor %}</table>{% endblock %}

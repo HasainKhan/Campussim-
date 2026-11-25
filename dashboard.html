@@ -1,0 +1,7 @@
+{% extends "base.html" %}{% block title %}Dashboard{% endblock %}{% block body %}
+<h1>Welcome, {{ user.name.split(' ')[0] }}</h1>
+{% if user.role in ('admin','registrar') %}
+<div class="stats"><div><b>{{ stats.total }}</b>Policies</div><div><b>{{ stats.simulated }}</b>Simulated</div><div><b>{{ stats.published }}</b>Published</div><div><b>{{ stats.feedback }}</b>Feedback received</div></div>
+<h2>Recent policies</h2>{% else %}
+<p class="muted">You have given feedback on {{ stats.feedback }} policy notice(s).</p><h2>Latest notices</h2>{% endif %}
+{% include "_table.html" %}{% endblock %}

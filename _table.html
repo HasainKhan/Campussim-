@@ -1,0 +1,4 @@
+{% if rows %}<table class="grid"><tr><th>Title</th><th>Status</th>{% if user.role in ('admin','registrar') %}<th>Risk</th>{% endif %}<th>Created</th></tr>
+{% for r in rows %}<tr><td><a href="{{ url_for('policy_view', pid=r.id) }}">{{ r.title }}</a></td><td><span class="tag {{ r.status }}">{{ r.status }}</span></td>
+{% if user.role in ('admin','registrar') %}<td>{{ r.risk if r.risk is not none else 'not run' }}</td>{% endif %}<td>{{ r.created[:10] }}</td></tr>{% endfor %}</table>
+{% else %}<p class="muted">Nothing here yet.</p>{% endif %}
